@@ -22,3 +22,6 @@
 # Load de-identified data
   scrub_sis <- read.csv("data/scrub_sis.csv")
   
+# Load totals
+  totals <- read.csv("data/totals.csv")
+  
