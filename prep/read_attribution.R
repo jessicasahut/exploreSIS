@@ -13,8 +13,58 @@ cmh_map %<>%
          # pad leading zeroes on mcaid id
          mcaid_id = ifelse(mcaid_id == "        NA", NA, mcaid_id), 
          # make NAs
-         cmhsp_id = as.character(cmhsp_id)
+         cmhsp_id = as.character(cmhsp_id),
+         cmhsp_nm = car::recode(cmhsp_id,
+                                "'1182573' = 'Allegan CMH';
+                                '1181773' = 'HealthWest';
+                                '1182448' = 'Network 180';
+                                '1182009' = 'Ottawa CMH';
+                                '1181647' = 'West Michigan CMH';
+                                '1181576' = 'Bay Arenac';
+                                '1181601' = 'Gratiot';
+                                '1181683' = 'Tuscola';
+                                '1181709' = 'Central Michigan';
+                                '1181718' = 'LifeWays';
+                                '1181782' = 'Saginaw';
+                                '1181834' = 'The Right Door';
+                                '1181862' = 'Shiawassee';
+                                '1181923' = 'Huron';
+                                '1182045' = 'Montcalm';
+                                '1181807' = 'Newaygo';
+                                '1182018' = 'CEI';
+                                '1182967' = 'CEI';
+                                '1182063' = 'Au Sable';
+                                '1182134' = 'Barry';
+                                '1181807' = 'Newaygo';
+                                '1182153' = 'Berrien';
+                                '1181816' = 'North Country';
+                                '1181853' = 'Northeast';
+                                '1182107' = 'Northern Lakes';
+                                '1181594' = 'Copper';
+                                '1181905' = 'Northpointe';
+                                '2813568' = 'Detroit Wayne';
+                                '1705289' = 'Oakland';
+                                '1181610' = 'Genesee';
+                                '1181727' = 'Gogebic';
+                                '1182457' = 'Pathways';
+                                '1181825' = 'Pines';
+                                '1181997' = 'Hiawatha';
+                                '1181585' = 'Sanilac';
+                                '1181763' = 'Kalamazoo';
+                                '1182143' = 'St. Clair';
+                                '1181656' = 'Lapeer';
+                                '1181979' = 'St. Joseph';
+                                '1181736' = 'Lenawee';
+                                '1181665' = 'Summit Pointe';
+                                '1181871' = 'Livingston';
+                                '1181899' = 'Van Buren';
+                                '3396315' = 'Macomb';
+                                '1181674' = 'Washtenaw';
+                                '1182116' = 'Centra Wellness';
+                                '1181198' = 'Monroe';
+                                '1182125' = 'Woodlands'")
          ) 
+
 
 sub_sis <- 
 sub_sis %>% 
