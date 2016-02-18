@@ -157,7 +157,14 @@
            s2_1_fqy:s2_Score_Eight_Raw,
            self_advoc:other_advoc,
            s3a_1_support:s3b_Score_Total)
-
+# Format dates
+  
+ sub_sis$sis_wk <- lubridate::week(sub_sis$sis_date)
+ sub_sis$sis_yr <- lubridate::year(sub_sis$sis_date)
+ sub_sis$sis_yrwk <- lubridate::floor_date(sub_sis$sis_date, unit = "week")
+ #sub_sis$sis_yrwk <- sprintf("%04d-%02d", sub_sis$sis_yr, sub_sis$sis_wk)
+  
+  
 # Make Living Situation Groupings
 
   # First, we've got to remove the "â€“" characters
