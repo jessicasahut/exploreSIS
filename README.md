@@ -1,18 +1,3 @@
----
-output:
-  md_document:
-    variant: markdown_github
----
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r setup, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
-)
-```
 ## About
 This repo contains the [Shiny](http://shiny.rstudio.com/) user interface and server structure to produce an interactive application for analysis of Supports Intensity Scale (SIS) data.  
 

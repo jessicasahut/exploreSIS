@@ -246,6 +246,7 @@ pip-log.txt
 
 *.csv
 *.xml
+*.html
 *.xlsx
 *.xls
 .Rproj.user
