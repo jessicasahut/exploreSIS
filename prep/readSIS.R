@@ -186,3 +186,7 @@
     
     sub_sis$LivingType <- as.factor(sub_sis$LivingType)
 
+# Get rid on the non-essentials
+    
+    rm(redact); rm(current)
+    

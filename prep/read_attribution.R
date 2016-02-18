@@ -2,7 +2,7 @@
 
 library(dplyr)
 
-cmh_map <- read.delim("C:\\Users\\joshh\\Documents\\files\\Projects\\LRP_DataExtract\\data\\attribution\\ZTSAttributionFile_Region3_20151130_11_10_OUTPUT.TXT",
+cmh_map <- read.delim(attribution,
                       sep = "|", header = F)
 
 # Transform
@@ -13,19 +13,13 @@ cmh_map %<>%
          # pad leading zeroes on mcaid id
          mcaid_id = ifelse(mcaid_id == "        NA", NA, mcaid_id), 
          # make NAs
-         cmhsp_id = as.character(cmhsp_id),
-         cmhsp_nm = car::recode(cmhsp_id,
-                                "'1182573' = 'Allegan CMH';
-                                '1181773' = 'HealthWest';
-                                '1182448' = 'Network 180';
-                                '1182009' = 'Ottawa CMH';
-                                '1181647' = 'West Michigan CMH'")
+         cmhsp_id = as.character(cmhsp_id)
          ) 
 
 sub_sis <- 
 sub_sis %>% 
   left_join(cmh_map, by = "mcaid_id") %>%
-  select(sis_id:mcaid_id,cmhsp_id:cmhsp_nm,agency,
+  select(sis_id:mcaid_id,cmhsp_id,agency,
          interviewer_orig,interviewer,current_int,
          sis_wk:sis_yrwk,sis_date:LivingType) %>%
   mutate(agency = as.character(agency),
