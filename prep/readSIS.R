@@ -186,6 +186,9 @@
     
     sub_sis$LivingType <- as.factor(sub_sis$LivingType)
 
+# Assumes all interviewers current unless defined in local file
+  sub_sis <- sub_sis %>% mutate(current_int = TRUE) # stop-gap until file submitted
+    
 # Get rid on the non-essentials
     
     rm(redact); rm(current)
