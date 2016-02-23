@@ -917,7 +917,11 @@ dashboardPage(
                 width = NULL,
                 tabPanel(
                   "Patterns of Need",
-                  "Please select a number of groups (colors) for...",
+                  d3heatmapOutput("need_heat")
+                ),
+                tabPanel(
+                  "How To",
+                  "You can select a number of groups (colors) for...",
                   numericInput(
                     inputId = "need_rows",
                     label = "Clients (rows):", 
@@ -932,8 +936,7 @@ dashboardPage(
                     value = 5,
                     min = 1, 
                     max = 10
-                  ),
-                  d3heatmapOutput("need_heat")
+                  )
                 )
               )
             )
