@@ -949,8 +949,8 @@ dashboardPage(
                         click and drag over cells to zoom in and look more 
                         closely at a given set."),
                       p(
-                        "This helps us to look at broader patterns across life 
-                        domains among the current population of clients who have 
+                        "Here you can look at broader patterns of need across life 
+                        domains for the current population of clients who have 
                         been assessed.  Clustering is an exploratory technique.  
                         It won't give you any conclusive results, but may 
                         generate insights and additional questions for analysis.  
@@ -971,7 +971,7 @@ dashboardPage(
                         value = 5,
                         min = 1, 
                         max = 10,
-                        width = '200px'
+                        width = '50px'
                       ),
                       " and ",
                       numericInput(
@@ -980,7 +980,7 @@ dashboardPage(
                         value = 5,
                         min = 1, 
                         max = 10,
-                        width = '200px'
+                        width = '50px'
                       )
                     )
                   )
