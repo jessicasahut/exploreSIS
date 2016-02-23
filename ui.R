@@ -2,7 +2,7 @@
 
 dashboardPage(
   dashboardHeader(
-    title = "SIS Interviewer Dashboard"
+    title = "explore SIS"
   ),
   dashboardSidebar(
     sidebarMenu(
@@ -908,7 +908,7 @@ dashboardPage(
           column(
             width = 6,
             box(
-              title = "Patterns of Need", 
+              title = "Population Needs", 
               status = "warning",
               collapsible = TRUE, 
               collapsed = FALSE,
@@ -916,7 +916,24 @@ dashboardPage(
               tabBox(
                 width = NULL,
                 tabPanel(
-                  "Heatmap",
+                  "Patterns of Need",
+                  "Please select a number of groups (colors) for...",
+                  br(),
+                  sliderInput(
+                    inputId = "need_rows",
+                    label = "Clients (rows):", 
+                    min = 1, 
+                    max = 10, 
+                    value = 5
+                  ),
+                  br(),
+                  sliderInput(
+                    inputId = "need_cols",
+                    label = "Subscales (columns):", 
+                    min = 1, 
+                    max = 10, 
+                    value = 5
+                  ),
                   d3heatmapOutput("need_heat")
                 )
               )

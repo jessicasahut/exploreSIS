@@ -1426,7 +1426,7 @@
         
         d3heatmap(heat, 
                   colors = "Blues",
-                  k_row = 5, k_col = 5,
+                  k_row = input:need_rows, k_col = input:need_cols,
                   theme = "",
                   yaxis_font_size =  "0pt",
                   show_grid = F)
