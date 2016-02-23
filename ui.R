@@ -2,7 +2,7 @@
 
 dashboardPage(
   dashboardHeader(
-    title = "SIS Interviewer Dashboard"
+    title = "explore SIS"
   ),
   dashboardSidebar(
     sidebarMenu(
@@ -847,7 +847,7 @@ dashboardPage(
               title = "Items for Focus", 
               status = "warning",
               collapsible = TRUE, 
-              collapsed = TRUE,
+              collapsed = FALSE,
               width = NULL,
               tabBox(
                 width = NULL,
@@ -900,6 +900,89 @@ dashboardPage(
                     "CMHSPs may be interested in identifying how these areas 
                     are addressed through the development of individual plans of 
                     service (IPOS)."
+                  )
+                )
+              )
+            )
+          ),
+          column(
+            width = 6,
+            box(
+              title = "Population Needs", 
+              status = "warning",
+              collapsible = TRUE, 
+              collapsed = FALSE,
+              width = NULL,
+              tabBox(
+                width = NULL,
+                tabPanel(
+                  "Patterns of Need",
+                  d3heatmapOutput("need_heat")
+                ),
+                tabPanel(
+                  "About",
+                  tabBox(
+                    width = NULL,
+                    tabPanel(
+                      "Patterns of Need",
+                      p(
+                        "If we investigate patterns in the types of needs that 
+                        people have across various domains (i.e. SIS subscales), 
+                        we may be able to distinguish patterns that call for 
+                        different types of treatment or management."  
+                      ),
+                      p(
+                        "The visualization here is called a ",
+                        a(
+                          href = "https://en.wikipedia.org/wiki/Heat_map",
+                          "heatmap"
+                        ),
+                        ".  This one shows the most recent scores for each 
+                        client who has received a SIS assessment. The values 
+                        of each subscale have been ", 
+                        a(
+                          href = "https://stat.ethz.ch/R-manual/R-devel/library/base/html/scale.html",
+                          "normalized"
+                        ),
+                        " to allow for comparison.  Darker blue means a higher 
+                        score, while lighter blue means a lower score. You can 
+                        click and drag over cells to zoom in and look more 
+                        closely at a given set."),
+                      p(
+                        "Here you can look at broader patterns of need across life 
+                        domains for the current population of clients who have 
+                        been assessed.  Clustering is an exploratory technique.  
+                        It won't give you any conclusive results, but may 
+                        generate insights and additional questions for analysis.  
+                        The root-like shapes on the sides of the heatmap are 
+                        called", 
+                        a(
+                          href = "http://wheatoncollege.edu/lexomics/files/2012/08/How-to-Read-a-Dendrogram-Web-Ready.pdf",
+                          "dendrograms"
+                        ),
+                        "and they show how the different elements (here, clients 
+                        and subscales) are grouped.  To allow you to more easily 
+                        see these groupings, the heatmap allows you to select a 
+                        number of groups (colors) to highlight for..."
+                      ),
+                      numericInput(
+                        inputId = "need_rows",
+                        label = "Clients (a.k.a. rows):", 
+                        value = 5,
+                        min = 1, 
+                        max = 10,
+                        width = '50px'
+                      ),
+                      " and ",
+                      numericInput(
+                        inputId = "need_cols",
+                        label = "Subscales (a.k.a. columns):", 
+                        value = 5,
+                        min = 1, 
+                        max = 10,
+                        width = '50px'
+                      )
+                    )
                   )
                 )
               )

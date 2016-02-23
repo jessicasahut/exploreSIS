@@ -1401,5 +1401,37 @@
           
       })
       
+      output$need_heat <- renderD3heatmap({
+        
+        heat <- 
+          sisInput() %>%
+          filter(is.na(fake_id) == FALSE) %>% # Remove empty randomized IDs
+          group_by(fake_id) %>% 
+          filter(as.Date(sis_date) == max(as.Date(sis_date))) %>% # Most recent per ID
+          ungroup() %>% droplevels() %>%
+          select(homeliving_std,commliving_std,hlthsafety_std,
+                 lifelearng_std,social_std,self_advoc:other_advoc,s3a_Score_Total,
+                 s3b_Score_Total) %>%
+          rename(home = homeliving_std, 
+                 community = commliving_std,
+                 health_safety = hlthsafety_std, 
+                 learning = lifelearng_std,
+                 social = social_std, 
+                 self_advocacy = self_advoc,
+                 other_advocacy = other_advoc,
+                 medical = s3a_Score_Total,
+                 behavioral = s3b_Score_Total) %>%
+          mutate_each(funs(as.numeric)) %>%
+          scale() 
+        
+        d3heatmap(heat, 
+                  colors = "Blues",
+                  k_row = input$need_rows, k_col = input$need_cols,
+                  theme = "",
+                  yaxis_font_size =  "0pt",
+                  show_grid = F)
+        
+      })
+      
     }
   )
