@@ -889,16 +889,15 @@ dashboardPage(
                     ), 
                     "The score from this section is not used to determine the ", 
                     em("Support Needs Index"), " score."
-                    ),
-                  strong("Use in Planning"), 
+                  ),
                   p(
                     "The top 4 items in this section of the SIS are intended to 
                     be included in person-centered planning.  This graph shows 
                     which items most frequently make it to the", 
-                    em("top 4"), "list of clients in the selected agency"
+                    em("top 4"), "list of clients in the selected agency."
                   ),
                   p(
-                    "CMHSP’s may be interested in identifying how these areas 
+                    "CMHSPs may be interested in identifying how these areas 
                     are addressed through the development of individual plans of 
                     service (IPOS)."
                   )
