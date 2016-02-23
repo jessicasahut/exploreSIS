@@ -918,21 +918,20 @@ dashboardPage(
                 tabPanel(
                   "Patterns of Need",
                   "Please select a number of groups (colors) for...",
-                  br(),
-                  sliderInput(
+                  numericInput(
                     inputId = "need_rows",
                     label = "Clients (rows):", 
+                    value = 5,
                     min = 1, 
-                    max = 10, 
-                    value = 5
+                    max = 10
                   ),
-                  br(),
-                  sliderInput(
+                  " and ",
+                  numericInput(
                     inputId = "need_cols",
                     label = "Subscales (columns):", 
+                    value = 5,
                     min = 1, 
-                    max = 10, 
-                    value = 5
+                    max = 10
                   ),
                   d3heatmapOutput("need_heat")
                 )
