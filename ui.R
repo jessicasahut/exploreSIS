@@ -847,7 +847,7 @@ dashboardPage(
               title = "Items for Focus", 
               status = "warning",
               collapsible = TRUE, 
-              collapsed = TRUE,
+              collapsed = FALSE,
               width = NULL,
               tabBox(
                 width = NULL,
@@ -901,6 +901,23 @@ dashboardPage(
                     are addressed through the development of individual plans of 
                     service (IPOS)."
                   )
+                )
+              )
+            )
+          ),
+          column(
+            width = 6,
+            box(
+              title = "Patterns of Need", 
+              status = "warning",
+              collapsible = TRUE, 
+              collapsed = FALSE,
+              width = NULL,
+              tabBox(
+                width = NULL,
+                tabPanel(
+                  "Heatmap",
+                  d3heatmapOutput("need_heat")
                 )
               )
             )
