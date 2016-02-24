@@ -971,7 +971,7 @@ dashboardPage(
                         value = 5,
                         min = 1, 
                         max = 10,
-                        width = '50px'
+                        width = '100px'
                       ),
                       " and ",
                       numericInput(
@@ -980,7 +980,7 @@ dashboardPage(
                         value = 5,
                         min = 1, 
                         max = 10,
-                        width = '50px'
+                        width = '100px'
                       )
                     )
                   )
