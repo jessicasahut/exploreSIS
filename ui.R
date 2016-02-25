@@ -344,14 +344,16 @@ dashboardPage(
                       ),
                       p(
                         "The ", em("Support Needs Index"), " is normalized, which 
-                        means that it is designed in such a way that it is 
-                        designed in such a way that its mean is 100 and its 
-                        standard deviation is 15, based on the initial group of 
-                        people who were tested using the tool.  If the ", 
+                        means that it is designed in such a way that its mean is 
+                        100 and its standard deviation is 15, based on the 
+                        initial group of people who were tested using the tool.  
+                        If the ", 
                         em("Actual Scores"), " of the current population were 
                         distributed in the same way, they would fit under the ", 
                         em("bell curve"), "in the same way as the ", 
-                        em("Standard Scores")
+                        em("Standard Scores"), ".  Please note that agencies 
+                        should not expect their data to match the bell curve 
+                        until all of their population has been assessed."
                       ),
                       p(
                         "A density plot (which is what the lines are called) can 
@@ -418,47 +420,100 @@ dashboardPage(
                 ),
                 tabPanel(
                   "About",
-                  br(),
-                  strong("This wobbly-looking chart..."),
-                  p(
-                    "Take a deep breath.  Don't run away screaming from the 
-                    'dancing octopus' chart that you see here. Let's take a 
-                    moment to understand how it might help us out."
-                  ),
-                  p(
-                    "Have you ever asked a question sounding like: ",
-                    em(
-                       "What percent of people are ____? What percent of those 
-                       people are _____?"
-                    ), 
-                    " and so on...?  If so, then this is the visualization for 
-                    you."
-                  ), 
-                  p("With this chart, you can ask multiple questions like:",
-                    br(),
-                    em(
-                      "In the area of money management, how many people needed 
-                      prompting on a daily basis?  How many hours per day did 
-                      they need it?"
+                  tabBox(
+                    width = NULL,
+                    tabPanel(
+                      "The Chart", 
+                      br(),
+                      strong("This wobbly-looking chart..."),
+                      p(
+                        "Take a deep breath.  Don't run away screaming from the 
+                        'dancing octopus' chart that you see here. Let's take a 
+                        moment to understand how it might help us out."
+                      ),
+                      p(
+                        "Have you ever asked a question sounding like: ",
+                        em(
+                          "What percent of people are ____? What percent of those 
+                          people are _____?"
+                        ), 
+                        " and so on...?  If so, then this is the visualization for 
+                        you."
+                      ), 
+                      p(
+                        "With this chart, you can ask multiple questions like:",
+                        br(),
+                        em(
+                          "In the area of money management, how many people needed 
+                          prompting on a daily basis?  How many hours per day did 
+                          they need it?"
+                        ),
+                        br(),
+                        em(
+                          "In the area of protection from exploitation, how many 
+                          people needed full physical support on a monthly basis? 
+                          How many minutes did they need it?"
+                        )
+                      ),
+                      p(
+                        "When you click on", em("alpha"), " or ", em("size"), 
+                        ", the chart sorts the variable alphabetically or by size.  
+                        You can sort either of these from low-to-high (<<) or 
+                        high-to-low (>>)."
+                      ),
+                      p(
+                        "The different colors on the chart correspond to the 
+                        variable at the top of the chart, so if 'Type of Support' is 
+                        on the top, there will be one color from each type of 
+                        support weaving down through the other variables."
+                      )
                     ),
-                    br(),
-                    em(
-                      "In the area of protection from exploitation, how many 
-                      people needed full physical support on a monthly basis? 
-                      How many minutes did they need it?"
+                    tabPanel(
+                      "The Data", 
+                      br(),
+                      strong("Type of Support"),
+                      p(
+                        "When completing Section 1, the support needs for each 
+                        activity addressed in the section are examined 
+                        with regard to three measures of support need:",
+                        br(),
+                        em("Frequency:"), 
+                        "How often extraordinary support (i.e., support beyond that 
+                        which is typically needed by most individuals without 
+                        disabilities) is required for each targeted activity.",
+                        br(),
+                        em("Daily Support Time:"), 
+                        "Amount of time that is typically devoted to support 
+                        provision on those days when the support is provided.",
+                        br(),
+                        em("Type of Support:"), 
+                        "The nature of support that would be needed by a person to 
+                        engage in the activity in question."
+                      ),
+                      strong("Definitions"),
+                      p(
+                        "The chart uses short words and phrases for ease of use. 
+                        Here are the full definitions from the SIS tool itself ",
+                        a(
+                          href = "http://aaidd.org/docs/default-source/sis-docs/sisfrequencyandscoringclarifications.pdf?sfvrsn=2",
+                          "as defined by AAIDD"
+                        ),":",
+                        br(),
+                        em("Frequency:"),
+                        "Hourly = hourly or more frequently; 
+                        Daily = at least once a day but not once an hour; 
+                        Weekly = at least once a week, but not once a day; 
+                        Monthly = at least once a month, but not once a week; 
+                        None = none or less than monthly",
+                        br(),
+                        em("Daily Support Time (DST):"),
+                        "Over 4 hrs = 4 hours or more; 
+                        2-4 hrs = 2 hours to less than 4 hours; 
+                        Under 2 hrs = 30 minutes to less than 2 hours; 
+                        Under 30 min = less than 30 minutes; 
+                        None = None"
+                      )
                     )
-                  ),
-                  p(
-                    "When you click on", em("alpha"), " or ", em("size"), 
-                    ", the chart sorts the variable alphabetically or by size.  
-                    You can sort either of these from low-to-high (<<) or 
-                    high-to-low (>>)."
-                  ),
-                  p(
-                    "The different colors on the chart correspond to the 
-                    variable at the top of the chart, so if 'Type of Support' is 
-                    on the top, there will be one color from each type of 
-                    support weaving down through the other variables."
                   )
                 )
               )
@@ -488,95 +543,101 @@ dashboardPage(
                   parsetOutput("tos_s2")
                 ),
                 tabPanel(
-                  "About the Chart", 
-                  br(),
-                  strong("This wobbly-looking chart..."),
-                  p(
-                    "Take a deep breath.  Don't run away screaming from the 
-                    'dancing octopus' chart that you see here. Let's take a 
-                    moment to understand how it might help us out."
-                  ),
-                  p(
-                    "Have you ever asked a question sounding like: ",
-                    em(
-                      "What percent of people are ____? What percent of those 
-                      people are _____?"
-                    ), 
-                    " and so on...?  If so, then this is the visualization for 
-                    you."
-                  ), 
-                  p(
-                    "With this chart, you can ask multiple questions like:",
-                    br(),
-                    em(
-                      "In the area of money management, how many people needed 
-                      prompting on a daily basis?  How many hours per day did 
-                      they need it?"
+                  "About",
+                  tabBox(
+                    width = NULL,
+                    tabPanel(
+                      "The Chart", 
+                      br(),
+                      strong("This wobbly-looking chart..."),
+                      p(
+                        "Take a deep breath.  Don't run away screaming from the 
+                        'dancing octopus' chart that you see here. Let's take a 
+                        moment to understand how it might help us out."
+                      ),
+                      p(
+                        "Have you ever asked a question sounding like: ",
+                        em(
+                          "What percent of people are ____? What percent of those 
+                          people are _____?"
+                        ), 
+                        " and so on...?  If so, then this is the visualization for 
+                        you."
+                        ), 
+                      p(
+                        "With this chart, you can ask multiple questions like:",
+                        br(),
+                        em(
+                          "In the area of money management, how many people needed 
+                          prompting on a daily basis?  How many hours per day did 
+                          they need it?"
+                        ),
+                        br(),
+                        em(
+                          "In the area of protection from exploitation, how many 
+                          people needed full physical support on a monthly basis? 
+                          How many minutes did they need it?"
+                        )
+                      ),
+                      p(
+                        "When you click on", em("alpha"), " or ", em("size"), 
+                        ", the chart sorts the variable alphabetically or by size.  
+                        You can sort either of these from low-to-high (<<) or 
+                        high-to-low (>>)."
+                      ),
+                      p(
+                        "The different colors on the chart correspond to the 
+                        variable at the top of the chart, so if 'Type of Support' is 
+                        on the top, there will be one color from each type of 
+                        support weaving down through the other variables."
+                      )
                     ),
-                    br(),
-                    em(
-                      "In the area of protection from exploitation, how many 
-                      people needed full physical support on a monthly basis? 
-                      How many minutes did they need it?"
+                    tabPanel(
+                      "The Data", 
+                      br(),
+                      strong("Type of Support"),
+                      p(
+                        "When completing Section 2, the support needs for each 
+                        activity related to protection and advocacy are examined 
+                        with regard to three measures of support need:",
+                        br(),
+                        em("Frequency:"), 
+                        "How often extraordinary support (i.e., support beyond that 
+                        which is typically needed by most individuals without 
+                        disabilities) is required for each targeted activity.",
+                        br(),
+                        em("Daily Support Time:"), 
+                        "Amount of time that is typically devoted to support 
+                        provision on those days when the support is provided.",
+                        br(),
+                        em("Type of Support:"), 
+                        "The nature of support that would be needed by a person to 
+                        engage in the activity in question."
+                      ),
+                      strong("Definitions"),
+                      p(
+                        "The chart uses short words and phrases for ease of use. 
+                        Here are the full definitions from the SIS tool itself ",
+                        a(
+                          href = "http://aaidd.org/docs/default-source/sis-docs/sisfrequencyandscoringclarifications.pdf?sfvrsn=2",
+                          "as defined by AAIDD"
+                        ),":",
+                        br(),
+                        em("Frequency:"),
+                        "Hourly = hourly or more frequently; 
+                        Daily = at least once a day but not once an hour; 
+                        Weekly = at least once a week, but not once a day; 
+                        Monthly = at least once a month, but not once a week; 
+                        None = none or less than monthly",
+                        br(),
+                        em("Daily Support Time (DST):"),
+                        "Over 4 hrs = 4 hours or more; 
+                        2-4 hrs = 2 hours to less than 4 hours; 
+                        Under 2 hrs = 30 minutes to less than 2 hours; 
+                        Under 30 min = less than 30 minutes; 
+                        None = None"
+                      )
                     )
-                  ),
-                  p(
-                    "When you click on", em("alpha"), " or ", em("size"), 
-                    ", the chart sorts the variable alphabetically or by size.  
-                    You can sort either of these from low-to-high (<<) or 
-                    high-to-low (>>)."
-                  ),
-                  p(
-                    "The different colors on the chart correspond to the 
-                    variable at the top of the chart, so if 'Type of Support' is 
-                    on the top, there will be one color from each type of 
-                    support weaving down through the other variables."
-                  )
-                ),
-                tabPanel(
-                  "About the Data", 
-                  br(),
-                  strong("Type of Support"),
-                  p(
-                    "When completing Section 2, the support needs for each 
-                    activity related to protection and advocacy are examined 
-                    with regard to three measures of support need:",
-                    br(),
-                    em("Frequency:"), 
-                    "How often extraordinary support (i.e., support beyond that 
-                    which is typically needed by most individuals without 
-                    disabilities) is required for each targeted activity.",
-                    br(),
-                    em("Daily Support Time:"), 
-                    "Amount of time that is typically devoted to support 
-                    provision on those days when the support is provided.",
-                    br(),
-                    em("Type of Support:"), 
-                    "The nature of support that would be needed by a person to 
-                    engage in the activity in question."
-                  ),
-                  strong("Definitions"),
-                  p(
-                    "The chart uses short words and phrases for ease of use. 
-                    Here are the full definitions from the SIS tool itself",
-                    a(
-                      href = "http://aaidd.org/docs/default-source/sis-docs/sisfrequencyandscoringclarifications.pdf?sfvrsn=2",
-                      "as defined by AAIDD"
-                    ),":",
-                    br(),
-                    em("Frequency:"),
-                    "Hourly = hourly or more frequently; 
-                    Daily = at least once a day but not once an hour; 
-                    Weekly = at least once a week, but not once a day; 
-                    Monthly = at least once a month, but not once a week; 
-                    None = none or less than monthly",
-                    br(),
-                    em("Daily Support Time (DST):"),
-                    "Over 4 hrs = 4 hours or more; 
-                    2-4 hrs = 2 hours to less than 4 hours; 
-                    Under 2 hrs = 30 minutes to less than 2 hours; 
-                    Under 30 min = less than 30 minutes; 
-                    None = None"
                   )
                 )
               )
