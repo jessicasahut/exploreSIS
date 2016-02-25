@@ -344,14 +344,16 @@ dashboardPage(
                       ),
                       p(
                         "The ", em("Support Needs Index"), " is normalized, which 
-                        means that it is designed in such a way that it is 
-                        designed in such a way that its mean is 100 and its 
-                        standard deviation is 15, based on the initial group of 
-                        people who were tested using the tool.  If the ", 
+                        means that it is designed in such a way that its mean is 
+                        100 and its standard deviation is 15, based on the 
+                        initial group of people who were tested using the tool.  
+                        If the ", 
                         em("Actual Scores"), " of the current population were 
                         distributed in the same way, they would fit under the ", 
                         em("bell curve"), "in the same way as the ", 
-                        em("Standard Scores")
+                        em("Standard Scores"), ".  Please note that agencies 
+                        should not expect their data to match the bell curve 
+                        until all of their population has been assessed."
                       ),
                       p(
                         "A density plot (which is what the lines are called) can 
