@@ -421,6 +421,7 @@ dashboardPage(
                 tabPanel(
                   "About",
                   tabBox(
+                    width = NULL,
                     tabPanel(
                       "The Chart", 
                       br(),
@@ -544,6 +545,7 @@ dashboardPage(
                 tabPanel(
                   "About",
                   tabBox(
+                    width = NULL,
                     tabPanel(
                       "The Chart", 
                       br(),
