@@ -940,7 +940,7 @@
             tos1Input() %>% 
             filter(field == input$s1domain) %>%
             select(-field) %>%
-            group_by(agency,type,frequency,DST) %>%
+            group_by(type,frequency,DST,agency) %>%
             summarize(n = sum(n))
           
           parset(
