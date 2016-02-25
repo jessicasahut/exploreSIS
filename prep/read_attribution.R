@@ -2,17 +2,15 @@
 
 library(dplyr)
 
-cmh_map <- read.delim(attribution,
-                      sep = "|", header = F)
+cmh_map <- read.delim(attribution, sep = "|", header = F)
 
 # Transform
 
 cmh_map %<>%
   rename(mcaid_id = V1, cmhsp_id = V2, as_of_dt = V3) %>%
-  mutate(mcaid_id = sprintf("%010d", as.integer(mcaid_id)), 
-         # pad leading zeroes on mcaid id
-         mcaid_id = ifelse(mcaid_id == "        NA", NA, mcaid_id), 
-         # make NAs
+  mutate(mcaid_id = gsub("[^0-9]", "", mcaid_id), # remove non-num
+         mcaid_id = sprintf("%010d", as.integer(mcaid_id)), # pad leading zeroes
+         mcaid_id = ifelse(grepl("NA",mcaid_id), NA, mcaid_id), #rm coerced NAs
          cmhsp_id = as.character(cmhsp_id),
          cmhsp_nm = car::recode(cmhsp_id,
                                 "'1182573' = 'Allegan CMH';
@@ -64,7 +62,6 @@ cmh_map %<>%
                                 '1181198' = 'Monroe';
                                 '1182125' = 'Woodlands'")
          ) 
-
 
 sub_sis <- 
 sub_sis %>% 
