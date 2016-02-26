@@ -17,3 +17,13 @@ If you wish to use this work to augment any endeavor that generates revenues –
 
 Otherwise, please use what’s here – and contribute your own modifications or improvements. 
 
+## Credits
+Like most efforts, this one was built on the backs of giants.  Special thanks and shout-outs to the following:
+
+* [hadley](https://github.com/hadley), for: [dplyr](https://github.com/hadley/dplyr), [ggplot2](https://github.com/hadley/ggplot2), and [tidyr](https://github.com/hadley/tidyr)
+* The [rstudio](https://github.com/rstudio) team, for: [shiny](https://github.com/rstudio/shiny), [shinydashboard](https://github.com/rstudio/shinydashboard), [dygraphs](https://github.com/rstudio/dygraphs), [d3heatmap](https://github.com/rstudio/d3heatmap), [DT](https://github.com/rstudio/DT)
+* [timelyportfolio](https://github.com/timelyportfolio), for [parsetR](https://github.com/timelyportfolio/parsetR)
+* [ropensci](https://github.com/ropensci), for open-sourcing the beautiful [plotly](https://github.com/ropensci/plotly) JS library
+* [joshuaulrich](https://github.com/joshuaulrich), for the [xts](https://github.com/joshuaulrich/xts) package
+
+
