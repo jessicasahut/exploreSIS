@@ -507,7 +507,7 @@
         )
         
         paste("Your date range is", 
-              difftime(input$dateRange[2], input$dateRange[1], units="days"),
+              difftime(input$dateRange[2], input$dateRange[1], units = "days"),
               "days")
         
       })
