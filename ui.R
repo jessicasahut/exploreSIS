@@ -978,6 +978,99 @@ dashboardPage(
                 width = NULL,
                 tabPanel(
                   "Patterns of Need",
+                  tabBox(
+                    width = NULL,
+                    tabPanel(
+                      "Defining Patterns",
+                      p(
+                        "To design programs that meet people where they are, it 
+                        helps to understand patterns in the types of needs that 
+                        people have in various areas of their lives. You can 
+                        check out the ", em("Scenarios"), " tab for examples of 
+                        situations where this may be useful."  
+                      ),
+                      h4("How many groups of people? (Rows)"),
+                      p(
+                        "Depending on your particular situation, you may want to 
+                        focus on greater or fewer groups of clients, each of 
+                        whom is depicted as a row in the heatmap.  You can 
+                        select the number of groups here.  This will 
+                        color the clusters of the groups of clients whose 
+                        patterns of need are most distinct, based on the SIS 
+                        subscales:"
+                      ),
+                      numericInput(
+                        inputId = "need_rows",
+                        label = NULL, 
+                        value = 5,
+                        min = 1, 
+                        max = 10,
+                        width = '100px'
+                      ),
+                      h4("How many clusters of needs? (Columns)"),
+                      p(
+                        "You may also want to see which types of need are more 
+                        or less closely related in the population that has been 
+                        assessed.  Selecting the number below will color the 
+                        clusters of the need categories (columns):"
+                      ),
+                      numericInput(
+                        inputId = "need_cols",
+                        label = NULL, 
+                        value = 5,
+                        min = 1, 
+                        max = 10,
+                        width = '100px'
+                      ),
+                      p(
+                        "Then, click on the ", em("Heatmap"), " tab to explore 
+                        the groups in your population."
+                      )
+                    ),
+                    tabPanel(
+                      "Scenarios",
+                      p(
+                        "The following scenarios provide examples of instances 
+                        where it may be helpful to define patterns of need in 
+                        the population being served:"
+                      ),
+                      h4("Specialized Teams"), 
+                      p(
+                        "  A supervisor of a supports coordination team for 
+                        persons with I/DD would like to start a pilot program
+                        providing intensive, multi-disciplinary team based 
+                        integrated care for quadrant four consumers (persons 
+                        with high behavioral health and physical health needs 
+                        as defined in the Four Quadrant Clinical Integration 
+                        Model). She could use the heat map to identify a group 
+                        of patients for whom this intervention could be offered.",
+                        em("(In this instance, if she were trying to assign people 
+                           to 3 supports coordination programs, she may want to 
+                           highlight 3 groups)")
+                      ),
+                      h4("Best Practice Guidelines"), 
+                      p(
+                        "  A clinical director would like to identify clinical 
+                        guidelines to assist clinicians in recommending best 
+                        practices based on peoples needs. A first step could be 
+                        taking the domains listed on the heat map and 
+                        identifying any evidence based or best practice 
+                        interventions that meet that particular need for people 
+                        with I/DD."
+                      ),
+                      h4("Training Needs"), 
+                      p(
+                        "  A clinical director would like to know what types of 
+                        trainings would benefit the clinicians serving persons 
+                        with I/DD at his agency. He could look at the heat map 
+                        and determine which three areas represent the highest 
+                        need within the entire I/DD population served."
+                      )
+                    )
+                  )
+                ),
+                tabPanel(
+                  "Heatmap",
                   d3heatmapOutput("need_heat")
                 ),
                 tabPanel(
@@ -985,13 +1078,7 @@ dashboardPage(
                   tabBox(
                     width = NULL,
                     tabPanel(
-                      "Patterns of Need",
-                      p(
-                        "If we investigate patterns in the types of needs that 
-                        people have across various domains (i.e. SIS subscales), 
-                        we may be able to distinguish patterns that call for 
-                        different types of treatment or management."  
-                      ),
+                      "Heatmap",
                       p(
                         "The visualization here is called a ",
                         a(
@@ -1024,24 +1111,8 @@ dashboardPage(
                         "and they show how the different elements (here, clients 
                         and subscales) are grouped.  To allow you to more easily 
                         see these groupings, the heatmap allows you to select a 
-                        number of groups (colors) to highlight for..."
-                      ),
-                      numericInput(
-                        inputId = "need_rows",
-                        label = "Clients (a.k.a. rows):", 
-                        value = 5,
-                        min = 1, 
-                        max = 10,
-                        width = '100px'
-                      ),
-                      " and ",
-                      numericInput(
-                        inputId = "need_cols",
-                        label = "Subscales (a.k.a. columns):", 
-                        value = 5,
-                        min = 1, 
-                        max = 10,
-                        width = '100px'
+                        number of groups (colors) to highlight for both the rows 
+                        and columns."
                       )
                     )
                   )
