@@ -215,6 +215,17 @@
         
       })
       
+      output$import <- renderUI({
+        
+        selectInput(
+          "import",
+          label = "Show life domains important to/for the person:",
+          choices = c("All", levels(as.factor(sec1Input()$importance))), 
+          selected = "All"
+        )
+        
+      })
+      
       ## VISUALIZATIONS ##
 
       output$rate <- renderValueBox({
@@ -524,88 +535,100 @@
         ggplotly(ggplans)
         
       })
-
-      output$plans_s1 <- renderPlotly({
+      
+      output$need_import_s1 <- renderPlotly({
         
         if ( input$agency == "All" ) {
-          filt_inpt <- sisInput() 
+          filt_input <- sec1Input() 
         } else if ( input$agency %in% levels(unique(scrub_sis$agency)) ) {
-          filt_inpt <- sisInput() %>% filter(agency == input$agency) 
+          filt_input <- sec1Input() %>% filter(agency == input$agency)
         } else
           print(paste0("Error.  Unrecognized input."))
         
-        plans_s1 <-
-          filt_inpt %>%
-          select(fake_id, contains("s1")) %>%
-          select(fake_id, ends_with("to"), ends_with("for")) %>%
-          gather(field, score, s1a_1_to:s1f_8_for) %>%
-          mutate(important = ifelse(grepl("to$", field), yes = "To", no = "For"),
-                 item = gsub("to|for", "", field)) %>%
-          group_by(item, important) %>%
-          summarize(n = sum(score)) %>%
-          arrange(desc(n)) %>%
-          ungroup() %>%
-          mutate(item = car::recode(item,
-                                    "'s1a_1_' = 'Toilet';
-                                    's1a_2_' = 'Clothes';
-                                    's1a_3_' = 'Preparing food';
-                                    's1a_4_' = 'Eating food';
-                                    's1a_5_' = 'Housekeeping';
-                                    's1a_6_' = 'Dressing';
-                                    's1a_7_' = 'Hygiene';
-                                    's1a_8_' = 'Appliances';
-                                    's1b_1_' = 'Getting Around';
-                                    's1b_2_' = 'Recreation';
-                                    's1b_3_' = 'Public Services';
-                                    's1b_4_' = 'Visit Friends/Family';
-                                    's1b_5_' = 'Preferred Activities';
-                                    's1b_6_' = 'Shopping';
-                                    's1b_7_' = 'Community interaction';
-                                    's1b_8_' = 'Accessing Settings';
-                                    's1c_1_' = 'Learning interaction';
-                                    's1c_2_' = 'Learning decisions';
-                                    's1c_3_' = 'Problem solving';
-                                    's1c_4_' = 'Using technology';
-                                    's1c_5_' = 'Accessing training';
-                                    's1c_6_' = 'Academics';
-                                    's1c_7_' = 'Learning health skills';
-                                    's1c_8_' = 'Learning self-determination';
-                                    's1c_9_' = 'Learning self-management';
-                                    's1d_1_' = 'Job accomodations';
-                                    's1d_2_' = 'Specific job skills';
-                                    's1d_3_' = 'Co-worker interaction';
-                                    's1d_4_' = 'Supervisor interaction';
-                                    's1d_5_' = 'Work speed';
-                                    's1d_6_' = 'Work quality';
-                                    's1d_7_' = 'Changing assignments';
-                                    's1d_8_' = 'Seeking assistance';
-                                    's1e_1_' = 'Taking medications';
-                                    's1e_2_' = 'Avoiding hazards';
-                                    's1e_3_' = 'Obtaining health care';
-                                    's1e_4_' = 'Moving about';
-                                    's1e_5_' = 'Accessing emergency svs';
-                                    's1e_6_' = 'Nutritional diet';
-                                    's1e_7_' = 'Physical fitness';
-                                    's1e_8_' = 'Emotional well-being';
-                                    's1f_1_' = 'Socializing in home';
-                                    's1f_2_' = 'Recreation with others';
-                                    's1f_3_' = 'Socializing out of home';
-                                    's1f_4_' = 'Making friends';
-                                    's1f_5_' = 'Communicating with helpers';
-                                    's1f_6_' = 'Appropriate social skills';
-                                    's1f_7_' = 'Intimate relationships';
-                                    's1f_8_' = 'Volunteer work'"))
+        if ( input$import == "All") {
+          filt_input <- filt_input 
+        } else if ( input$import %in% levels(as.factor(filt_input$importance))) {
+          filt_input <- filt_input %>% filter(importance == input$import)
+        } else
+          print(paste0("Error.  Unrecognized input."))
+        
+        if ( input$need_import_s1_measure == "Number of people with need" ) {
+          filt_input %>%
+            mutate(no_concern = ifelse(importance == "Not endorsed" 
+                                       & type == "None", 
+                                       yes = TRUE, no = FALSE)) %>%
+            filter(no_concern == F) %>%
+            group_by(item,type ) %>% # type importance
+            summarize(n = n_distinct(fake_id),
+                      avg = round(mean(score, na.rm = T), digits = 1)) %>%
+            ungroup() %>% droplevels() %>%
+            arrange(desc(n)) %>%
+            plot_ly(x = item, y = n, type = "bar", color = type, 
+                    colors = c("#FF0000", "#00A08A", "#F2AD00", 
+                               "#F98400", "#5BBCD6")) %>%
+            layout(xaxis = list(title = "Life Domain", showticklabels = F),
+                   yaxis = list(title = "People with Need"),
+                   legend = list(xanchor = "right", yanchor = "top", x = 1, y = 1, 
+                                 font = list(size = 10)),
+                   barmode = "stack")
+        } else if ( input$need_import_s1_measure == "Average level of need" ) {
+          filt_input %>%
+            mutate(no_concern = ifelse(importance == "Not endorsed" 
+                                       & type == "None", 
+                                       yes = TRUE, no = FALSE)) %>%
+            filter(no_concern == F) %>%
+            group_by(item) %>% # type importance
+            summarize(n = n_distinct(fake_id),
+                      avg = round(mean(score, na.rm = T), digits = 1)) %>%
+            ungroup() %>% droplevels() %>%
+            arrange(desc(avg)) %>%
+            plot_ly(x = item, y = avg, type = "bar",  
+                    colors = c("#FF0000", "#00A08A", "#F2AD00", 
+                               "#F98400", "#5BBCD6")) %>%
+            layout(xaxis = list(title = "Life Domain", showticklabels = F),
+                   yaxis = list(title = "Average Score"),
+                   legend = list(xanchor = "right", yanchor = "top", x = 1, y = 1, 
+                                 font = list(size = 10)),
+                   barmode = "stack")
+        } else
+          print(paste0("Error.  Unrecognized input."))
+        
+      })
 
-          ggplans <-
-            ggplot(plans_s1, aes(x = reorder(item,-n), y = n, fill = important)) + 
-            geom_bar(stat = "identity", position = "stack") +
-            scale_x_discrete(breaks=NULL) +
-            scale_fill_manual(values = c('#b2df8a', '#1f78b4')) + 
-            ylab("People with need marked as important") +
-            xlab("Life Domain") +
-            theme_bw()
-          
-          ggplotly(ggplans)
+      output$import_s1 <- renderPlotly({
+        
+        if ( input$agency == "All" ) {
+          filt_inpt <- sec1Input() 
+        } else if ( input$agency %in% levels(unique(scrub_sis$agency)) ) {
+          filt_inpt <- sec1Input() %>% filter(agency == input$agency) 
+        } else
+          print(paste0("Error.  Unrecognized input."))
+        
+        filt_inpt %>%
+          group_by(item) %>%
+          summarize(To = sum(as.numeric(import_to), na.rm = T),
+                    For = sum(as.numeric(import_for), na.rm = T)) %>%
+          gather(important, n, To:For) %>%
+          ungroup() %>%
+          arrange(desc(n)) %>%
+          plot_ly(x = item, y = n, type = "bar", color = important, 
+                  colors = c('#b2df8a', '#1f78b4')) %>%
+          layout(xaxis = list(title = "Life Domain", showticklabels = F),
+                 yaxis = list(title = "People with need marked as important"),
+                 legend = list(xanchor = "right", yanchor = "top", x = 1, y = 1, 
+                               font = list(size = 10)),
+                 barmode = "stack")
+        
+          # ggplans <-
+          #   ggplot(plans_s1, aes(x = reorder(item,-n), y = n, fill = important)) + 
+          #   geom_bar(stat = "identity", position = "stack") +
+          #   scale_x_discrete(breaks = NULL) +
+          #   scale_fill_manual(values = c('#b2df8a', '#1f78b4')) + 
+          #   ylab("People with need marked as important") +
+          #   xlab("Life Domain") +
+          #   theme_bw()
+          # 
+          # ggplotly(ggplans)
         
       })
 
