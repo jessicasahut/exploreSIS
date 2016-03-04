@@ -913,8 +913,20 @@ dashboardPage(
               tabBox(
                 width = NULL,
                 tabPanel(
-                  "Support Needs Scale",
-                  plotlyOutput("plans_s1")
+                  "Support Needs",
+                  uiOutput('import'),
+                  selectInput(
+                    "need_import_s1_measure",
+                    label = "Show the:",
+                    choices = c("Number of people with need", 
+                                "Average level of need"), 
+                    selected = "Number of people with need"
+                  ),
+                  plotlyOutput("need_import_s1")
+                ),
+                tabPanel(
+                  "Important To/For",
+                  plotlyOutput("import_s1")
                 ),
                 tabPanel(
                   "Protection",
@@ -922,45 +934,66 @@ dashboardPage(
                 ),
                 tabPanel(
                   "About",
-                  h4("Support Needs Scale"),
-                  p(
-                    strong("Important to the Person"), 
-                    "Each item in this section can be endorsed as being of 
-                    particular importance either ", em("to"), " or ", em("for"),
-                    " the person served.  Items endorsed by the individual are 
-                    particularly relevant for service planning, as they are 
-                    likely to be high priorities for action."
-                  ),
-                  p(
-                    strong("Important for the Person"),
-                    "Items marked as being important ", em("for"), " the person 
-                    have been identified by family members or other informants 
-                    as relevant for the individual.  These items may be relevant  
-                    for planning, as they indicate areas where key members of an 
-                    individuals support system have noted needs."
-                  ),
-                  h4("Protection"),
-                  p(
-                    "Section II of the SIS (the Supplemental Protection and 
-                    Advocacy Scale) measures 8 activities such as: ",
-                    em(
-                      "self-advocacy, money management, protecting self from 
-                      exploitation, legal responsibilities, making choices and 
-                      advocating for others."
-                    ), 
-                    "The score from this section is not used to determine the ", 
-                    em("Support Needs Index"), " score."
-                  ),
-                  p(
-                    "The top 4 items in this section of the SIS are intended to 
-                    be included in person-centered planning.  This graph shows 
-                    which items most frequently make it to the", 
-                    em("top 4"), "list of clients in the selected agency."
-                  ),
-                  p(
-                    "CMHSPs may be interested in identifying how these areas 
-                    are addressed through the development of individual plans of 
-                    service (IPOS)."
+                  tabBox(
+                    width = NULL,
+                    tabPanel(
+                      "Support Needs",
+                      p(
+                        "This chart shows all life domains ", 
+                        em("i.e. questions"), " where individuals either 
+                        had a need or which they endorsed as important.  It 
+                        excludes item responses where no need existed ", 
+                        em("and"), " the item was not endorsed as important 
+                        since these instances are unlikely to be relevant for 
+                        planning."
+                      )
+                    ),
+                    tabPanel(
+                      "Important To/For",
+                      p(
+                        strong("Important to the Person"), 
+                        "Each item in this section can be endorsed as being of 
+                        particular importance either ", em("to"), " or ", 
+                        em("for"), " the person served.  Items endorsed by the 
+                        individual are particularly relevant for service 
+                        planning, as they are likely to be high priorities for 
+                        action."
+                      ),
+                      p(
+                        strong("Important for the Person"),
+                        "Items marked as being important ", em("for"), 
+                        " the person have been identified by family members or 
+                        other informants as relevant for the individual.  These 
+                        items may be relevant  for planning, as they indicate 
+                        areas where key members of an individuals support system 
+                        have noted needs."
+                      )
+                    ),
+                    tabPanel(
+                      "Protection",
+                      p(
+                        "Section II of the SIS (the Supplemental Protection and 
+                        Advocacy Scale) measures 8 activities such as: ",
+                        em(
+                          "self-advocacy, money management, protecting self from 
+                          exploitation, legal responsibilities, making choices and 
+                          advocating for others."
+                        ), 
+                        "The score from this section is not used to determine the ", 
+                        em("Support Needs Index"), " score."
+                        ),
+                      p(
+                        "The top 4 items in this section of the SIS are intended to 
+                        be included in person-centered planning.  This graph shows 
+                        which items most frequently make it to the", 
+                        em("top 4"), "list of clients in the selected agency."
+                      ),
+                      p(
+                        "CMHSPs may be interested in identifying how these areas 
+                        are addressed through the development of individual 
+                        plans of service (IPOS)."
+                      )
+                    )
                   )
                 )
               )
