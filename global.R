@@ -86,20 +86,72 @@
     summarize(DST_n = sum(DST_n)) %>%
     ungroup() 
   
+  s1_to <-
+    scrub_sis %>%
+    filter(is.na(fake_id) == FALSE) %>% # Remove empty randomized IDs
+    group_by(fake_id) %>% 
+    filter(as.Date(sis_date) == max(as.Date(sis_date))) %>% # Most recent per ID
+    ungroup() %>% droplevels() %>%
+    select(fake_id,agency,sis_date,ends_with("to")) %>% 
+    select(fake_id,agency,sis_date,starts_with("s1")) %>%
+    mutate_each(funs(as.character), -fake_id, -agency, -sis_date) %>%
+    gather(item, import_to, s1a_1_to:s1f_8_to) %>%
+    mutate(import_to_n = as.numeric(import_to),
+           item = gsub("to","",item),
+           id = as.factor(paste0(fake_id,item))
+    ) %>%
+    group_by(id, fake_id, agency, sis_date, item, import_to) %>%
+    summarize(n = n_distinct(id),
+              import_to_n = sum(import_to_n)) %>%
+    ungroup()
+  
+  s1_for <-
+    scrub_sis %>%
+    filter(is.na(fake_id) == FALSE) %>% # Remove empty randomized IDs
+    group_by(fake_id) %>% 
+    filter(as.Date(sis_date) == max(as.Date(sis_date))) %>% # Most recent per ID
+    ungroup() %>% droplevels() %>%
+    select(fake_id,agency,sis_date,ends_with("for")) %>% 
+    select(fake_id,agency,sis_date,starts_with("s1")) %>%
+    mutate_each(funs(as.character), -fake_id, -agency, -sis_date) %>%
+    gather(item, import_for, s1a_1_for:s1f_8_for) %>%
+    mutate(import_for_n = as.numeric(import_for),
+           item = gsub("for","",item),
+           id = as.factor(paste0(fake_id,item))
+    ) %>%
+    group_by(id, fake_id, agency, sis_date, item, import_for) %>%
+    summarize(n = n_distinct(id),
+              import_for_n = sum(import_for_n)) %>%
+    ungroup()
+  
   # Join intermediate tables
-  s1 <- s1_tos %>% inner_join(s1_fqy, by = "id")
-  s1 <- s1 %>% inner_join(s1_dst, by = "id")
+  s1 <- 
+  s1_tos %>% 
+    inner_join(s1_fqy, by = "id") %>%
+    select(id, fake_id = fake_id.x, agency = agency.x, 
+           sis_date = sis_date.x, item = item.x, 
+           type, type_n, frequency, frequency_n) %>%
+    inner_join(s1_dst, by = "id") %>%
+    select(id, fake_id = fake_id.x, agency = agency.x, 
+           sis_date = sis_date.x, item = item.x, 
+           type, type_n, frequency, frequency_n, DST, DST_n) %>%
+    inner_join(s1_to, by = "id") %>%
+    select(id, fake_id = fake_id.x, agency = agency.x, 
+           sis_date = sis_date.x, item = item.x, 
+           type, type_n, frequency, frequency_n, DST, DST_n,
+           import_to_n) %>%
+    inner_join(s1_for, by = "id") %>%
+    select(id, fake_id = fake_id.x, agency = agency.x, 
+           sis_date = sis_date.x, item = item.x, 
+           type, type_n, frequency, frequency_n, DST, DST_n,
+           import_to_n, import_for_n)
   
   # Remove intermediate tables
-  rm(s1_dst)
-  rm(s1_fqy)
-  rm(s1_tos)
+  rm(s1_dst); rm(s1_fqy); rm(s1_tos); rm(s1_to); rm(s1_for)
   
   # Remove extra cols and recode vars  
   s1 <-
     s1 %>%
-    select(id, fake_id, agency, sis_date, item, 
-           type, type_n, frequency, frequency_n, DST, DST_n) %>%
     mutate(item = car::recode(item,
                               "'s1a_1_' = 'Toilet';
                               's1a_2_' = 'Clothes';
@@ -168,7 +220,14 @@
                            '2' = 'Under 2 hrs';
                            '3' = '2-4 hrs';
                            '4' = 'Over 4 hrs'"),
-         score = type_n + frequency_n + DST_n) 
+         score = type_n + frequency_n + DST_n,
+         import_to = as.logical(import_to_n),
+         import_for = as.logical(import_for_n),
+         importance = ifelse(import_to == T & import_for == T, "To and For",
+                             ifelse(import_to == T, "To",
+                                    ifelse(import_for == T, "For",
+                                           "Not endorsed")))) %>%
+    select(-import_to_n, -import_for_n)
   
   # Process Section 2
   s2_tos <-
@@ -230,20 +289,72 @@
     summarize(DST_n = sum(DST_n)) %>%
     ungroup() 
   
+  s2_to <-
+    scrub_sis %>%
+    filter(is.na(fake_id) == FALSE) %>% # Remove empty randomized IDs
+    group_by(fake_id) %>% 
+    filter(as.Date(sis_date) == max(as.Date(sis_date))) %>% # Most recent per ID
+    ungroup() %>% droplevels() %>%
+    select(fake_id,agency,sis_date,ends_with("to")) %>% 
+    select(fake_id,agency,sis_date,starts_with("s2")) %>%
+    mutate_each(funs(as.character), -fake_id, -agency, -sis_date) %>%
+    gather(item, import_to, s2_1_to:s2_8_to) %>%
+    mutate(import_to_n = as.numeric(import_to),
+           item = gsub("to","",item),
+           id = as.factor(paste0(fake_id,item))
+    ) %>%
+    group_by(id, fake_id, agency, sis_date, item, import_to) %>%
+    summarize(n = n_distinct(id),
+              import_to_n = sum(import_to_n)) %>%
+    ungroup()
+  
+  s2_for <-
+    scrub_sis %>%
+    filter(is.na(fake_id) == FALSE) %>% # Remove empty randomized IDs
+    group_by(fake_id) %>% 
+    filter(as.Date(sis_date) == max(as.Date(sis_date))) %>% # Most recent per ID
+    ungroup() %>% droplevels() %>%
+    select(fake_id,agency,sis_date,ends_with("for")) %>% 
+    select(fake_id,agency,sis_date,starts_with("s2")) %>%
+    mutate_each(funs(as.character), -fake_id, -agency, -sis_date) %>%
+    gather(item, import_for, s2_1_for:s2_8_for) %>%
+    mutate(import_for_n = as.numeric(import_for),
+           item = gsub("for","",item),
+           id = as.factor(paste0(fake_id,item))
+    ) %>%
+    group_by(id, fake_id, agency, sis_date, item, import_for) %>%
+    summarize(n = n_distinct(id),
+              import_for_n = sum(import_for_n)) %>%
+    ungroup()
+  
   # Join intermediate tables
-  s2 <- s2_tos %>% inner_join(s2_fqy, by = "id")
-  s2 <- s2 %>% inner_join(s2_dst, by = "id")
+  s2 <- 
+    s2_tos %>% 
+    inner_join(s2_fqy, by = "id") %>%
+    select(id, fake_id = fake_id.x, agency = agency.x, 
+           sis_date = sis_date.x, item = item.x, 
+           type, type_n, frequency, frequency_n) %>%
+    inner_join(s2_dst, by = "id") %>%
+    select(id, fake_id = fake_id.x, agency = agency.x, 
+           sis_date = sis_date.x, item = item.x, 
+           type, type_n, frequency, frequency_n, DST, DST_n) %>%
+    inner_join(s2_to, by = "id") %>%
+    select(id, fake_id = fake_id.x, agency = agency.x, 
+           sis_date = sis_date.x, item = item.x, 
+           type, type_n, frequency, frequency_n, DST, DST_n,
+           import_to_n) %>%
+    inner_join(s2_for, by = "id") %>%
+    select(id, fake_id = fake_id.x, agency = agency.x, 
+           sis_date = sis_date.x, item = item.x, 
+           type, type_n, frequency, frequency_n, DST, DST_n,
+           import_to_n, import_for_n)
   
   # Remove intermediate tables
-  rm(s2_dst)
-  rm(s2_fqy)
-  rm(s2_tos)
+  rm(s2_dst); rm(s2_fqy); rm(s2_tos); rm(s2_to); rm(s2_for)
   
   # Remove extra cols and recode vars  
   s2 <-
     s2 %>%
-    select(id, fake_id, agency, sis_date, item, 
-           type, type_n, frequency, frequency_n, DST, DST_n) %>%
     mutate(item = car::recode(item,
                               "'s2_1_' = 'Self-advocacy';
                              's2_2_' = 'Money management';
@@ -271,5 +382,12 @@
                            '2' = 'Under 2 hrs';
                            '3' = '2-4 hrs';
                            '4' = 'Over 4 hrs'"),
-           score = type_n + frequency_n + DST_n)
+           score = type_n + frequency_n + DST_n,
+           import_to = as.logical(import_to_n),
+           import_for = as.logical(import_for_n),
+           importance = ifelse(import_to == T & import_for == T, "To and For",
+                               ifelse(import_to == T, "To",
+                                      ifelse(import_for == T, "For",
+                                             "Not endorsed")))) %>%
+    select(-import_to_n, -import_for_n)
   
