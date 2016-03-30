@@ -2,8 +2,6 @@
 
   library(dplyr)
   library(car)
-  
-  sis_full <- read.csv(sis_src, colClasses = c("sis_cl_medicaidNum" = "character"))
 
 # What does the data look like?
   ncol(sis_full)
