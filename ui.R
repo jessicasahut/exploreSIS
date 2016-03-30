@@ -169,6 +169,17 @@ dashboardPage(
                   dataTableOutput("num_dt")
                 ),
                 tabPanel(
+                  "What if...?",
+                  p(
+                    "Use the sliders below to understand the potential impact 
+                    that various changes might have on interviewer productivity:"
+                  ),
+                  strong("What if..."),
+                  uiOutput("what_staff"),
+                  uiOutput("what_prod"),
+                  dygraphOutput("on_track_what_if")
+                ),
+                tabPanel(
                   "About",
                   tabBox(
                     width = NULL,
@@ -255,6 +266,51 @@ dashboardPage(
                         be devoted to assessment in the region and compare that to 
                         the available hours of existing SIS interviewers in the 
                         region during the time remaining."
+                      )
+                    ),
+                    tabPanel(
+                      "What if...?",
+                      br(),
+                      h4("Sliders"),
+                      p(
+                        "You can use the sliding bars to look at what might 
+                        happen using various scenarios where the number of 
+                        interviewers or the productivity of those interviewers 
+                        are either decreased or increased.  The first sliding 
+                        bar starts at zero and lets you add or substract 
+                        interviewers. The second starts at the current average 
+                        per week and lets you change to half or 1.5 times that 
+                        amount."
+                      ),
+                      h4("The Fine Print"),
+                      p(
+                        "The projections here make several assumptions in their 
+                        calculations, which are helpful to understand:",
+                        br(),
+                        strong("Scheduling:"),
+                        "It is possible that SIS interviews are not being 
+                        completed quickly enough to cover the entire population 
+                        due to issues with scheduling SIS assessments", 
+                        em(
+                          "(i.e. it's possible that you have enough people, with 
+                          enough capacity, but there aren't appointments being 
+                          scheduled in an efficient enough manner to keep 
+                          everyone busy)"
+                        ),
+                        br(),
+                        strong("Current Interviewers:"), 
+                        "The default min and max for the staffing slider is 
+                        based on the average number of assessments per 
+                        interviewer over the past 3 months.",
+                        br(),
+                        strong("FTEs dedicated to SIS:"),
+                        "The projection assumes that each interviewer has the 
+                        same proportion of their position dedicated to SIS 
+                        interviews, though this may not be accurate.  People may 
+                        have other jobs besides SIS assessment, in which case it 
+                        is not accurate to assume that everyone has the same 
+                        capacity. Adding data about FTEs dedicated to SIS 
+                        assessments would allow for this to be more accurate."
                       )
                     )
                   )

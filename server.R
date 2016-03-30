@@ -12,6 +12,53 @@
                  & as.Date(sis_date) <= input$dateRange[2])
       })
       
+      recentInput <- reactive({
+        
+        sisInput() %>%
+          filter(as.Date(sis_date) >= most_recent - (365 * 3))
+        
+      })
+      
+      per_wk <- reactive({
+        
+        if ( input$agency == "All" ) {
+          
+          per_wk <- 
+            scrub_sis %>%
+            # Filter out expired assessments (> 3 yrs old)
+            filter(most_recent - as.Date(sis_date) <= (365 * 3)) %>%
+            # Note we still use unfiltered dataset here to calc cum sum over wks
+            # without the date filter applied
+            filter(as.POSIXct(sis_date) >= as.POSIXct("2011-12-12")
+                   & as.Date(sis_date) <= Sys.Date()
+            ) %>%
+            group_by(sis_yrwk) %>%
+            summarize(n = n()) %>%
+            rename(week = sis_yrwk) %>%
+            mutate(avg = NA,
+                   need = NA) %>%
+            ungroup()
+          
+        } else if ( input$agency %in% levels(unique(scrub_sis$agency)) ) {
+          per_wk <- 
+            scrub_sis %>%
+            # Filter out expired assessments (> 3 yrs old)
+            filter(most_recent - as.Date(sis_date) <= (365 * 3)) %>%
+            filter(as.POSIXct(sis_date) >= as.POSIXct("2011-12-12")
+                   & as.Date(sis_date) <= Sys.Date()
+                   & agency == input$agency
+            ) %>%
+            group_by(sis_yrwk) %>%
+            summarize(n = n()) %>%
+            rename(week = sis_yrwk) %>%
+            mutate(avg = NA,
+                   need = NA) %>%
+            ungroup()
+        } else
+          print(paste0("Error.  Unrecognized input."))
+        
+      })
+      
       tos1Input <- reactive({
         
         tos_section1 <-
@@ -175,7 +222,7 @@
           )
         )
         
-        # make sure last date is in dataset range
+        # make sure start date is in dataset range
         validate(
           need(input$dateRange[1] >= min(as.Date(scrub_sis$sis_date)[as.Date(scrub_sis$sis_date) <= Sys.Date()]), 
                "Start date precedes available data"
@@ -186,6 +233,44 @@
               difftime(input$dateRange[2], input$dateRange[1], units = "days"),
               "days")
         
+      })
+      
+      output$what_staff <- renderUI({
+        
+        sliderInput(
+          inputId = "what_staff", 
+          "...we changed the number of SIS interviewers?",
+          min = length(unique(scrub_sis$interviewer[as.POSIXct(scrub_sis$sis_date) >= as.POSIXct(most_recent - 90)])) * -1,
+          max = length(unique(scrub_sis$interviewer[as.POSIXct(scrub_sis$sis_date) >= as.POSIXct(most_recent - 90)])),
+          value = 0,
+          step = 1,
+          round = T
+        )
+        
+      })
+      
+      output$what_prod <- renderUI({
+
+        per_wk <- per_wk()
+        
+        avg_per_wk <- round(mean(per_wk$n[as.POSIXct(per_wk$week) >= as.POSIXct(most_recent - 90)], 
+                                 na.rm = T), 
+                            digits = 0)
+
+        recent_int <- length(unique(scrub_sis$interviewer[as.POSIXct(scrub_sis$sis_date) >= as.POSIXct(most_recent - 90)]))
+        
+        avg_person_wk <- avg_per_wk / recent_int
+        
+        sliderInput(
+          inputId = "what_prod",
+          "...each interviewer completed fewer/more assessments per week?",
+          min = round(avg_person_wk * 0.5, digits = 0),
+          max = round(avg_person_wk * 1.5, digits = 0),
+          value = avg_person_wk,
+          step = 1,
+          round = T
+        )
+
       })
       
       output$s1domain <- renderUI({
@@ -238,9 +323,7 @@
         
         # Filter out expired assessments (> 3 yrs old)
         
-        most_recent <- max(as.Date(scrub_sis$sis_date)[as.Date(scrub_sis$sis_date) <= Sys.Date()]) 
-        
-        sisIn <- sisInput() %>% filter(most_recent - as.Date(sis_date) <= (365 * 3))
+        sisIn <- recentInput()
         
         # Proportion of clients interviewed in selected time period 
         # to total current clients meeting criteria
@@ -394,42 +477,7 @@
 
       output$on_track <- renderDygraph({
         
-        most_recent <- max(as.Date(scrub_sis$sis_date)[as.Date(scrub_sis$sis_date) <= Sys.Date()]) 
-        
-        if ( input$agency == "All" ) {
-          
-          per_wk <- 
-            scrub_sis %>%
-            # Filter out expired assessments (> 3 yrs old)
-            filter(most_recent - as.Date(sis_date) <= (365 * 3)) %>%
-            # Note we still use unfiltered dataset here to calc cum sum over wks
-            filter(as.POSIXct(sis_date) >= as.POSIXct("2011-12-12")
-                   & as.Date(sis_date) <= Sys.Date()
-            ) %>%
-            group_by(sis_yrwk) %>%
-            summarize(n = n()) %>%
-            rename(week = sis_yrwk) %>%
-            mutate(avg = NA,
-                   need = NA) %>%
-            ungroup()
-          
-        } else if ( input$agency %in% levels(unique(scrub_sis$agency)) ) {
-          per_wk <- 
-            scrub_sis %>%
-            # Filter out expired assessments (> 3 yrs old)
-            filter(most_recent - as.Date(sis_date) <= (365 * 3)) %>%
-            filter(as.POSIXct(sis_date) >= as.POSIXct("2011-12-12")
-                   & as.Date(sis_date) <= Sys.Date()
-                   & agency == input$agency
-            ) %>%
-            group_by(sis_yrwk) %>%
-            summarize(n = n()) %>%
-            rename(week = sis_yrwk) %>%
-            mutate(avg = NA,
-                   need = NA) %>%
-            ungroup()
-        } else
-          print(paste0("Error.  Unrecognized input."))
+        per_wk <- per_wk()
         
         week <- seq(from = max(as.Date(per_wk$week)), to = due, by = "week")
         
@@ -497,6 +545,72 @@
         
       })
 
+      output$on_track_what_if <- renderDygraph({
+        
+        per_wk <- per_wk()
+        
+        week <- seq(from = max(as.Date(per_wk$week)), to = due, by = "week")
+        
+        avg_person_wk <- input$what_prod
+        
+        recent_int <- length(unique(scrub_sis$interviewer[as.POSIXct(scrub_sis$sis_date) >= as.POSIXct(most_recent - 90)]))
+        
+        avg_per_wk <- avg_person_wk * (recent_int + input$what_staff)
+        
+        # Make projection data
+        tst <- data.frame(week)
+        tst$n <- NA
+        tst$avg <- 
+          seq(from = sum(per_wk$n, na.rm = T) + avg_per_wk,
+              to = sum(per_wk$n, na.rm = T) + avg_per_wk * length(week),
+              by = avg_per_wk
+          )
+        tst$need <- 
+          seq(from = sum(per_wk$n, na.rm = T) +
+                ceiling((totals$total[totals$agency == input$agency] 
+                         - sum(per_wk$n, na.rm = T)) / length(week)),
+              to = sum(per_wk$n, na.rm = T) +
+                ceiling((totals$total[totals$agency == input$agency] 
+                         - sum(per_wk$n, na.rm = T)) / length(week)) *length(week),
+              by = ceiling((totals$total[totals$agency == input$agency] 
+                            - sum(per_wk$n, na.rm = T)) / length(week))
+          )
+        
+        per_wk$week <- as.Date(per_wk$week) # Make date types the same
+        
+        per_wk <- rbind(per_wk,tst)
+        
+        per_wk <-
+          per_wk %>%
+          ungroup() %>%
+          mutate(running = order_by(week, cumsum(n))) 
+        
+        per_wk$week <- as.POSIXct(per_wk$week)
+        
+        per_wk_srs <- as.xts(per_wk$running, order.by=per_wk$week)
+        
+        names(per_wk_srs)[1]<-"running"
+        
+        per_wk_srs$avg <- per_wk$avg
+        per_wk_srs$need <- per_wk$need
+        
+        dygraph(per_wk_srs, main = "What if...? Projections") %>%
+          dyAxis("x", label = "Week of Assessments") %>%
+          dyAxis("y", label = "# SIS assessments (cumulative)",
+                 valueRange = c(0, max(per_wk$need))) %>%
+          dySeries("running", label = "Actual", 
+                   strokeWidth = 2, fillGraph = TRUE) %>%
+          dySeries("avg", label = "With projected changes",
+                   strokeWidth = 2, strokePattern = "dashed") %>%
+          dySeries("need", label = "To meet goal",
+                   strokeWidth = 2, strokePattern = "dashed") %>%
+          dyLegend(width = 400) %>%
+          dyEvent(x = "2012-01-22", "Ottawa Starts", labelLoc = "bottom") %>%
+          dyEvent(x = "2014-07-01", "Region Starts", labelLoc = "bottom") %>%
+          dyEvent(x = "2017-09-20", "Deadline", labelLoc = "bottom") 
+        
+      })
+      
       output$plans <- renderPlotly({
         
         if ( input$agency == "All" ) {
