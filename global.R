@@ -22,7 +22,10 @@
 
 # Load de-identified data
   scrub_sis <- read.csv("data/scrub_sis.csv")
-  
+
+# Get most recent SIS score
+  most_recent <- max(as.Date(scrub_sis$sis_date)[as.Date(scrub_sis$sis_date) <= Sys.Date()])
+    
 # Load totals
   totals <- read.csv("data/totals.csv")
   
