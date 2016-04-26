@@ -614,7 +614,6 @@
       output$plans <- renderPlotly({
         
         if ( input$agency == "All" ) {
-          
           plans <-
             sisInput() %>%
             select(fake_id, s2_Score_One, s2_Score_Two, s2_Score_Three, s2_Score_Four) %>%
@@ -623,6 +622,7 @@
                    item = sub("^\\s+", "", item)) %>%
             group_by(item) %>%
             summarize(n = n()) %>%
+            ungroup() %>%
             arrange(desc(n))
         } else if ( input$agency %in% levels(unique(scrub_sis$agency)) ) {
           plans <-
@@ -634,19 +634,18 @@
                    item = sub("^\\s+", "", item)) %>%
             group_by(item) %>%
             summarize(n = n()) %>%
+            ungroup() %>%
             arrange(desc(n))
         } else
           print(paste0("Error.  Unrecognized input."))
         
-        ggplans <-
-          ggplot(plans, aes(x = reorder(item,-n), y = n)) + 
-          geom_bar(stat = "identity", position = "stack") +
-          scale_x_discrete(breaks=NULL) +
-          ylab("# times included in planning") +
-          xlab("Item (hover for name)") +
-          theme_bw()
-        
-        ggplotly(ggplans)
+        plans %>%
+          plot_ly(x = item, y = n, type = "bar", color = item, colors = "Set3") %>%
+          layout(xaxis = list(title = "Type of Need", showticklabels = F),
+                 yaxis = list(title = "# times included in planning"),
+                 legend = list(xanchor = "right", yanchor = "top", x = 1, y = 1, 
+                               font = list(size = 10)),
+                 barmode = "stack")
         
       })
       
@@ -732,17 +731,6 @@
                  legend = list(xanchor = "right", yanchor = "top", x = 1, y = 1, 
                                font = list(size = 10)),
                  barmode = "stack")
-        
-          # ggplans <-
-          #   ggplot(plans_s1, aes(x = reorder(item,-n), y = n, fill = important)) + 
-          #   geom_bar(stat = "identity", position = "stack") +
-          #   scale_x_discrete(breaks = NULL) +
-          #   scale_fill_manual(values = c('#b2df8a', '#1f78b4')) + 
-          #   ylab("People with need marked as important") +
-          #   xlab("Life Domain") +
-          #   theme_bw()
-          # 
-          # ggplotly(ggplans)
         
       })
 
@@ -926,37 +914,47 @@
       output$hist_sni <- renderPlotly({
         
         if ( input$agency == "All" ) {
-          hist <-
-            ggplot(sisInput(), aes(x = SupportNeedsIndex, fill = agency)) +
-            geom_histogram(alpha = .5, binwidth = 2, position = "stack") +
-            scale_x_continuous(name = "Support Needs Index") +
-            scale_y_continuous(name = "Number of Clients") +
-            scale_fill_discrete(name = "CMHSP") + 
-            theme_bw()
+          scrub_sis_filt <- sisInput()
+          notetxt <- "Distribution of scores<br>for Support Needs Index<br>across all CMHSPs"
         } else if ( input$agency %in% levels(unique(scrub_sis$agency)) ) {
           scrub_sis_filt <- sisInput() %>% filter(agency == input$agency)
-          hist <-
-            ggplot(scrub_sis_filt, aes(x = SupportNeedsIndex, fill = agency)) +
-            geom_histogram(alpha = .5, binwidth = 2) + 
-            scale_x_continuous(name = "Support Needs Index") +
-            scale_y_continuous(name = "Number of Clients") +
-            scale_fill_discrete(name = "CMHSP") +
-            scale_fill_discrete(name = "CMHSP") + 
-            theme_bw()
+          notetxt <- paste0("Distribution of scores<br>for Support Needs Index<br>at ",input$agency)
         } else
           print(paste0("Error.  Unrecognized input."))
         
+        hist <-
+        scrub_sis_filt %>%
+          plot_ly(x = SupportNeedsIndex,
+                  opacity = 0.6, 
+                  type = "histogram",
+                  hoverinfo = "all", 
+                  name = "people",
+                  showlegend = F,
+                  mode = "markers") %>%
+          layout(xaxis = list(title = "Support Needs Index Score", 
+                              tickmode = "array"),
+                 yaxis = list(title = "People assessed", showgrid = F),
+                 annotations = list(
+                   list(x = min(SupportNeedsIndex), xanchor = "left", 
+                        y = 1, yanchor = "top", yref = "paper",
+                        showarrow = F, align = "left",
+                        text = notetxt))) 
+        
         ifelse(
           input$central == "Mean",
-          yes = hist <-hist + geom_vline(data = scrub_sis, 
-                                         aes(xintercept = mean(SupportNeedsIndex)),
-                                         linetype = "dashed", size = 0.5),
-          no  = hist <-hist + geom_vline(data = scrub_sis, 
-                                         aes(xintercept = median(SupportNeedsIndex)),
-                                         linetype = "dashed", size = 0.5)
+          yes = hist <- hist %>% add_trace(x = mean(SupportNeedsIndex), 
+                                           y = mean(SupportNeedsIndex),
+                                           name = "Mean score",
+                                           showlegend = F,
+                                           mode = "line"),
+          no  = hist <- hist %>% add_trace(x = median(SupportNeedsIndex), 
+                                           y = median(SupportNeedsIndex),
+                                           name = "Median score",
+                                           showlegend = F,
+                                           mode = "line")
         )
         
-        ggplotly(hist)
+        hist
         
       })
 
@@ -1104,6 +1102,7 @@
                    & LivingType %in% input$living) %>%
             group_by(name,level) %>%
             summarize(n = n()) %>%
+            ungroup() %>%
             arrange(desc(n))
         } else if ( input$agency %in% levels(unique(scrub_sis$agency)) ) {
           conditions <-
@@ -1114,76 +1113,77 @@
                    & LivingType %in% input$living) %>%
             group_by(name,level) %>%
             summarize(n = n()) %>%
+            ungroup() %>%
             arrange(desc(n))
         } else
           print(paste0("Error.  Unrecognized input."))
         
-        gg3 <-
-          ggplot(conditions, aes(x = reorder(name,-n), y = n, fill = level)) + 
-          geom_bar(stat = "identity", position = "stack") +
-          scale_x_discrete(breaks=NULL) +
-          ylab("Number of people with need") +
-          xlab("Type of Need") +
-          theme_bw()
-        
-        ggplotly(gg3)
+        conditions %>%
+          plot_ly(x = name, y = n, type = "bar", color = level, 
+                  colors = c("#F98400","#FF0000")) %>%
+          layout(xaxis = list(title = "Type of Need", showticklabels = F),
+                 yaxis = list(title = "People with need"),
+                 legend = list(xanchor = "right", yanchor = "top", x = 1, y = 1, 
+                               font = list(size = 10)),
+                 barmode = "stack")
         
       })
 
       output$hist_mb <- renderPlotly({
         
-        if ( input$agency == "All" & input$radio_mbhist == "Medical" ) {
+        if ( input$agency == "All" ) {
           scrub_sis_filt <- sisInput() %>% filter(LivingType %in% input$living)
-          hist <-
-            ggplot(scrub_sis_filt, 
-                   aes(x = s3a_Score_Total, 
-                       fill = agency)) +
-            geom_histogram(alpha = .5, binwidth = 1, position = "stack") +
-            scale_x_continuous(name = "Medical Needs per Person") +
-            scale_y_continuous(name = "Number of Clients") +
-            scale_fill_discrete(name = "CMHSP") + 
-            theme_bw()
-        } else if ( input$agency == "All" & input$radio_mbhist == "Behavioral" ) {
-          scrub_sis_filt <- sisInput() %>% filter(LivingType %in% input$living)
-          hist <-
-            ggplot(scrub_sis_filt, 
-                   aes(x = s3b_Score_Total, 
-                       fill = agency)) +
-            geom_histogram(alpha = .5, binwidth = 1, position = "stack") +
-            scale_x_continuous(name = "Behavioral Needs per Person") +
-            scale_y_continuous(name = "Number of Clients") +
-            scale_fill_discrete(name = "CMHSP") + 
-            theme_bw()
-        } else if ( input$agency %in% levels(unique(scrub_sis$agency))
-                    & input$radio_mbhist == "Medical" ) {
-          scrub_sis_filt <- 
-          sisInput() %>% 
-            filter(agency == input$agency 
-                   & LivingType %in% input$living)
-          hist <-
-            ggplot(scrub_sis_filt, aes(x = s3a_Score_Total, fill = agency)) +
-            geom_histogram(alpha = .5, binwidth = 1) + 
-            scale_x_continuous(name = "Medical Needs per Person") +
-            scale_y_continuous(name = "Number of Clients") +
-            scale_fill_discrete(name = "CMHSP") +
-            theme_bw()
-        } else if ( input$agency %in% levels(unique(scrub_sis$agency)) 
-                    & input$radio_mbhist == "Behavioral") {
-          scrub_sis_filt <- 
-          sisInput() %>% 
-            filter(agency == input$agency
-                   & LivingType %in% input$living)
-          hist <-
-            ggplot(scrub_sis_filt, aes(x = s3b_Score_Total, fill = agency)) +
-            geom_histogram(alpha = .5, binwidth = 1) + 
-            scale_x_continuous(name = "Behavioral Needs per Person") +
-            scale_y_continuous(name = "Number of Clients") +
-            scale_fill_discrete(name = "CMHSP") +
-            theme_bw()
+          notescope <- "across all CMHSPs"
+        } else if ( input$agency %in% levels(unique(scrub_sis$agency)) ) {
+          scrub_sis_filt <- sisInput() %>% filter(agency == input$agency & LivingType %in% input$living)
+          notescope <- paste0("at ",input$agency)
         } else
           print(paste0("Error.  Unrecognized input."))
         
-        ggplotly(hist)
+        if ( input$radio_mbhist == "Medical" ) {
+          notetxt <- paste0("Distribution of needs<br>for medical issues<br>",
+                            notescope)
+          hist <-
+            scrub_sis_filt %>%
+            plot_ly(x = s3a_Score_Total,
+                    opacity = 0.6, 
+                    type = "histogram",
+                    hoverinfo = "all",  
+                    name = "people",
+                    showlegend = F,
+                    mode = "markers") %>%
+            layout(xaxis = list(title = "Number of medical needs", 
+                                tickmode = "array"),
+                   yaxis = list(title = "People assessed", showgrid = F),
+                   annotations = list(
+                     list(x = max(s3a_Score_Total), xanchor = "right", 
+                          y = 1, yanchor = "top", yref = "paper",
+                          showarrow = F, align = "left",
+                          text = notetxt)))
+        } else if ( input$radio_mbhist == "Behavioral" ) {
+          notetxt <- paste0("Distribution of needs<br>for behavioral issues<br>",
+                            notescope)
+          hist <-
+            scrub_sis_filt %>%
+            plot_ly(x = s3b_Score_Total,
+                    opacity = 0.6, 
+                    type = "histogram",
+                    hoverinfo = "all",  
+                    name = "people",
+                    showlegend = F,
+                    mode = "markers") %>%
+            layout(xaxis = list(title = "Number of behavioral needs", 
+                                tickmode = "array"),
+                   yaxis = list(title = "People assessed", showgrid = F),
+                   annotations = list(
+                     list(x = max(s3a_Score_Total), xanchor = "right", 
+                          y = 1, yanchor = "top", yref = "paper",
+                          showarrow = F, align = "left",
+                          text = notetxt)))
+        } else
+          print(paste0("Error.  Unrecognized input."))
+         
+        hist
         
       })
       

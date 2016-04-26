@@ -14,7 +14,7 @@
   library(tidyr)
   library(plotly)
   library(xts)
-  library(explodingboxplotR)
+  #library(explodingboxplotR)
 
 # Define begin & due dates
   begin <- as.Date("2014/07/01")
