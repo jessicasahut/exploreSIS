@@ -9,43 +9,8 @@
   nlevels(as.factor(sis_full$sis_id))
   nlevels(sis_full$user_id)
   
-# Remove columns unnecessary for analysis
-  # This removes multiple columns with similar endings using regular expressions
-  redact <- sis_full[, -(grep(paste0( "notes" , "$" ) , colnames(sis_full),perl = TRUE) ) ]
-  redact <- redact[, -(grep(paste0( "PageNotes" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  #redact <- redact[, -( grep(paste0( "nm" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  #redact <- redact[, -( grep(paste0( "num" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  redact <- redact[, -( grep(paste0( "name" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  redact <- redact[, -( grep(paste0( "ext" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  redact <- redact[, -( grep(paste0( "addr_line1" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  #redact <- redact[, -( grep(paste0( "email" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  redact <- redact[, -( grep(paste0( "lang_spoken_cd" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  redact <- redact[, -( grep(paste0( "reln_typ_cd" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  redact <- redact[, -( grep(paste0( "code" , "$" ) , colnames(redact),perl = TRUE) ) ]
-  redact <- redact[, -( grep("_st$" , colnames(redact),perl = TRUE) ) ]
-  
-  # Remove other unneeded fields
-  redact <-
-  redact %>% 
-    select(-user_id,-sis_modified_dt,
-           -sis_cl_ssn,-sis_cl_age,
-           -sis_int_position_cd,-sis_int_city,
-           -sis_int_zip,-sis_db_create_dt,-sis_other_info,
-           -SisStatusChgDte,-LstModUser,              
-           -LstModDate,-ReminderDate,
-           -SixtyReminderDate,-ThirtyReminderDate,
-           -FinalBudget,-LocationId,
-           -SitChanged,-FormConfigId,
-           -sis_res1_agency,-sis_res2_agency,-sis_res3_agency,-sis_res4_agency,-sis_res5_agency,
-           -sis_res6_agency,-sis_res7_agency,-sis_res8_agency,-sis_res9_agency,-sis_res10_agency,
-           -sis_archived,-Deleted,-Upload_Info,-sis_cl_county,-Training,-Attachment,
-           -Recipient_ContactID,-ReviewStatus)
-
 # Filter Status == Completed ?
-  sis <- redact %>% tbl_df %>% filter(Status %in% c("Completed","Completed-Locked"))
-  
-#  Currently no duplicates (unique(sis$Related_SIS_ID) = NA)
-#  Will need to de-dup
+  sis <- sis_full %>% tbl_df %>% filter(Status %in% c("Completed","Completed-Locked"))
   
 # Convert all date/time to POSIXct format
   library(lubridate)
@@ -155,8 +120,8 @@
            s2_1_fqy:s2_Score_Eight_Raw,
            self_advoc:other_advoc,
            s3a_1_support:s3b_Score_Total)
+
 # Format dates
-  
  sub_sis$sis_wk <- lubridate::week(sub_sis$sis_date)
  sub_sis$sis_yr <- lubridate::year(sub_sis$sis_date)
  sub_sis$sis_yrwk <- lubridate::floor_date(sub_sis$sis_date, unit = "week")
