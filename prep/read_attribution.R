@@ -68,6 +68,7 @@ sub_sis %>%
   left_join(cmh_map, by = "mcaid_id") %>%
   select(sis_id:mcaid_id,cmhsp_id:cmhsp_nm,agency,
          interviewer_orig,interviewer,current_int,
+         sis_cl_st,
          sis_wk:sis_yrwk,sis_date:LivingType) %>%
   mutate(agency = as.character(agency),
          agency = ifelse(is.na(cmhsp_nm) == TRUE,
