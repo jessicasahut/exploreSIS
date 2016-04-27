@@ -1276,5 +1276,68 @@
         
       })
       
+      output$dt_datqual <- renderDataTable({
+        
+        if ( input$agency == "All" ) {
+          mia <-
+            sisInput() %>%
+            group_by(interviewer) %>%
+            summarize(unmatch_mcaid = sum(is.na(cmhsp_id)), # cmhsp_id is NA when no match found
+                      miss_start = sum(as.numeric(hour(start) %in% c(0, NA))),
+                      miss_end = sum(as.numeric(hour(end) %in% c(0, NA))),
+                      miss_liv = sum(is.na(LivingSituation)),
+                      not_mich = sum(as.numeric(sis_cl_st != "MI")))
+        } else if ( input$agency %in% levels(unique(scrub_sis$agency)) ) {
+          mia <-
+            sisInput() %>%
+            filter(agency == input$agency) %>%
+            group_by(interviewer) %>%
+            summarize(unmatch_mcaid = sum(is.na(cmhsp_id)), # cmhsp_id is NA when no match found
+                      miss_start = sum(as.numeric(hour(start) %in% c(0, NA))),
+                      miss_end = sum(as.numeric(hour(end) %in% c(0, NA))),
+                      miss_liv = sum(is.na(LivingSituation)),
+                      not_mich = sum(as.numeric(sis_cl_st != "MI")))
+        } else
+          print(paste0("Error.  Unrecognized input."))
+        
+        mia %>%
+          datatable(rownames = FALSE,
+                    colnames = c('Interviewer',
+                                 'Unmatched Mcaid IDs','Missing Start Time',
+                                 'Missing End Time','No Living Situation',
+                                 'State other than MI'),
+                    caption = 'Data Quality Issues, by Interviewer',
+                    extensions = c('Responsive','ColVis'),
+                    options = list(pageLength = 5, lengthMenu = c(5, 10, 20),
+                                   dom = 'C<"clear">lfrtip')) %>%
+          formatStyle('unmatch_mcaid',
+                      background = styleColorBar(mia$unmatch_mcaid, 'lightseagreen'),
+                      backgroundSize = '100% 90%',
+                      backgroundRepeat = 'no-repeat',
+                      backgroundPosition = 'center') %>%
+          formatStyle('miss_start',
+                      background = styleColorBar(mia$miss_start, 'lightsteelblue'),
+                      backgroundSize = '100% 90%',
+                      backgroundRepeat = 'no-repeat',
+                      backgroundPosition = 'center') %>%
+          formatStyle('miss_end',
+                      background = styleColorBar(mia$miss_end, 'lightblue'),
+                      backgroundSize = '100% 90%',
+                      backgroundRepeat = 'no-repeat',
+                      backgroundPosition = 'center') %>%
+          formatStyle('miss_liv',
+                      background = styleColorBar(mia$miss_liv, 'steelblue'),
+                      backgroundSize = '100% 90%',
+                      backgroundRepeat = 'no-repeat',
+                      backgroundPosition = 'center') %>%
+          formatStyle('not_mich',
+                      background = styleColorBar(mia$not_mich, 'darkseagreen'),
+                      backgroundSize = '100% 90%',
+                      backgroundRepeat = 'no-repeat',
+                      backgroundPosition = 'center')
+          
+        
+      })
+      
     }
   )

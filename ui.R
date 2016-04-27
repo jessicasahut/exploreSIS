@@ -36,6 +36,11 @@ dashboardPage(
         tabName = "planning", 
         icon = icon("paper-plane")
       ),
+      menuItem(
+        "Data Quality", 
+        tabName = "data_quality", 
+        icon = icon("database")
+      ),
       selectInput(
         "agency",
         label = "Pick an agency:",
@@ -1209,6 +1214,54 @@ dashboardPage(
                         and columns."
                       )
                     )
+                  )
+                )
+              )
+            )
+          )
+        )
+      ),
+      tabItem(
+        tabName = "data_quality",
+        fluidRow(
+          column(
+            width = 6,
+            box(
+              title = "Data Quality Issues", 
+              status = "warning",
+              collapsible = TRUE, 
+              collapsed = FALSE,
+              width = NULL,
+              tabBox(
+                width = NULL,
+                tabPanel(
+                  "Missing or Incorrect Entries",
+                  dataTableOutput("dt_datqual")
+                ),
+                tabPanel(
+                  "About",
+                  p(
+                    em("Unmatched Mcaid IDs"), 
+                    "counts the number of instances in which the Medicaid ID from 
+                    the SIS data does not match with the attribution file.",
+                    br(),
+                    em("Missing Start Time"), "and", em("Missing End Time"),
+                    "count the number of times that no start/end time was entered 
+                    for the assessment, thereby making it impossible to 
+                    calculate the duration of the assessment.",
+                    br(),
+                    em("No Living Situation"),
+                    "counts the number of instances in which no living situation 
+                    was identified for the individual being assessed, thereby 
+                    making it impossible to group people into 
+                    residential/family/independent groups.",
+                    br(),
+                    em("State other than MI"),
+                    "counts the number of times that a state other than Michigan 
+                    was identified as the living address of the person being 
+                    assessed.  This is one of a number of issues with data entry 
+                    that may make it difficult to correctly map proximity to 
+                    nearby resources."
                   )
                 )
               )
